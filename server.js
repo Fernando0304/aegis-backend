@@ -43,7 +43,9 @@ app.use(
   })
 );
 
-app.options("*", cors()); // Liberar preflight requests
+// Liberar preflight requests corretamente
+app.options("/*", cors());
+
 
 // ===============================
 // CRIAR PASTA UPLOADS SE NÃO EXISTIR
