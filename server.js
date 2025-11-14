@@ -44,7 +44,7 @@ app.use(
 );
 
 // Liberar preflight requests corretamente
-app.options("/*", cors());
+
 
 
 // ===============================
