@@ -19,6 +19,17 @@ import alertaRoutes from "./routes/alertaRoutes.js";
 
 // Conexão MongoDB
 import connectDB from "./config/db.js";
+import cors from "cors";
+
+app.use(cors({
+  origin: [
+    "http://localhost:5173",                // desenvolvimento
+    "https://aegis-frontend-dun.vercel.app" // seu frontend na Vercel
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"]
+}));
+
 
 dotenv.config();
 const app = express();
