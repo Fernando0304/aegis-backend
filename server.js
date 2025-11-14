@@ -19,17 +19,6 @@ import alertaRoutes from "./routes/alertaRoutes.js";
 
 // Conexão MongoDB
 import connectDB from "./config/db.js";
-import cors from "cors";
-
-app.use(cors({
-  origin: [
-    "http://localhost:5173",                // desenvolvimento
-    "https://aegis-frontend-dun.vercel.app" // seu frontend na Vercel
-  ],
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"]
-}));
-
 
 dotenv.config();
 const app = express();
@@ -39,6 +28,22 @@ const app = express();
 // ===============================
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// ===============================
+// 🔥 CORS CONFIGURADO PARA PRODUÇÃO
+// ===============================
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",                        // ambiente local
+      "https://aegis-frontend-dun.vercel.app",        // SUA url do Vercel
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
+app.options("*", cors()); // Liberar preflight requests
 
 // ===============================
 // CRIAR PASTA UPLOADS SE NÃO EXISTIR
@@ -57,7 +62,6 @@ app.use("/uploads", express.static(uploadsPath));
 // ===============================
 // MIDDLEWARES
 // ===============================
-app.use(cors());
 app.use(express.json());
 
 // ===============================
@@ -97,7 +101,6 @@ mqttClient.on("message", async (topic, message) => {
 
     const valor = data.temperatura || data.valor || 0;
 
-    // Salvar leitura
     const novoSensor = await Sensor.create({
       nome: data.sensor || "Sensor Ambiente AEGIS",
       valor,
@@ -107,9 +110,6 @@ mqttClient.on("message", async (topic, message) => {
 
     console.log("📦 Sensor salvo:", novoSensor);
 
-    // ===============================
-    // LÓGICA DE ALERTAS
-    // ===============================
     let alerta = null;
 
     if (valor >= 50) {
